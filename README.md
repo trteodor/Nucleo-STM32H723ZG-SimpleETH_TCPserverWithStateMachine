@@ -1,3 +1,3 @@
-# FAST_Line_Follower_STM32H7
+# NUCLEO-H723ZG ETH TCP server test
 Hi!
 Here i test Ethernet LwIP TCP/IP stack
