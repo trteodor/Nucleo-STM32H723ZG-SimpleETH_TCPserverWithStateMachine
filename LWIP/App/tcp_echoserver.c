@@ -33,6 +33,10 @@
  **/
 
  /* This file was modified by ST */
+//Nie wiem kto to modyfikowal i pisal ale po co tak kombinowac - to mial byc przyklad czyli powinien byc prosty?
+//Noa tak nie jest :/
+//Albo jeszcze kiepsko ogarniam tego LwIP co jest bardziej prawdopodobne no ale db niech im bedzie
+
 
 #include "tcp_echoserver.h"
 #include "lwip/debug.h"
@@ -77,7 +81,7 @@ static void tcp_echoserver_connection_close(struct tcp_pcb *tpcb, struct tcp_ech
   * @param  None
   * @retval None
   */
-void tcp_echoserver_init(void)
+void tcp_echoserver_init(void)  //to to musi proste
 {
   /* create new tcp pcb */
   tcp_echoserver_pcb = tcp_new();
@@ -112,7 +116,7 @@ void tcp_echoserver_init(void)
   * @param  err: not used 
   * @retval err_t: error status
   */
-static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
+static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)  //no to to ogarniam nawet znosnie
 {
   err_t ret_err;
   struct tcp_echoserver_struct *es;
@@ -165,7 +169,7 @@ static err_t tcp_echoserver_accept(void *arg, struct tcp_pcb *newpcb, err_t err)
   * @param  err: error information regarding the reveived pbuf
   * @retval err_t: error code
   */
-static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
+static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err) //ale tutaj to nakombinowane ze az glupio
 {
   struct tcp_echoserver_struct *es;
   err_t ret_err;
@@ -206,23 +210,25 @@ static err_t tcp_echoserver_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p
     }
     ret_err = err;
   }
-  else if(es->state == ES_ACCEPTED)
+  else if(es->state == ES_ACCEPTED)   //po sprawdzeniu tych pierdol wyzej
   {
     /* first data chunk in p->payload */
-    es->state = ES_RECEIVED;
+    es->state = ES_RECEIVED;												//wpisywane jest ze cos odebrano
     
     /* store reference to incoming pbuf (chain) */
-    es->p = p;
+    es->p = p;												// do tej struktury arg wpisywany jest wskaznik
     
     /* initialize LwIP tcp_sent callback function */
-    tcp_sent(tpcb, tcp_echoserver_sent);
+    tcp_sent(tpcb, tcp_echoserver_sent);								// po co tak robic :/ widocznie tak powinno sie robic
+    												//Funkcja tc p _ s e n t rejestruje funkcję zwrotną, którą biblioteka Iw lP wola, aby
+    													// informować aplikację, że druga strona potw ierdziła odebranie danych
     
     /* send back the received data (echo) */
     tcp_echoserver_send(tpcb, es);
     
     ret_err = ERR_OK;
   }
-  else if (es->state == ES_RECEIVED)
+  else if (es->state == ES_RECEIVED)		//czaje czaje
   {
     /* more data received from client and previous data has been already sent*/
     if(es->p == NULL)
@@ -337,15 +343,15 @@ static err_t tcp_echoserver_sent(void *arg, struct tcp_pcb *tpcb, u16_t len)
   es = (struct tcp_echoserver_struct *)arg;
   es->retries = 0;
   
-  if(es->p != NULL)
+  if(es->p != NULL)  // po dzialaniu funkcji ten tej send jest to modyfikowane dlatego to dziala
   {
     /* still got pbufs to send */
     tcp_sent(tpcb, tcp_echoserver_sent);
-    tcp_echoserver_send(tpcb, es);
+    tcp_echoserver_send(tpcb, es);  ///jaaa rekurencja :o  pierwszy raz to widze! alee fajnie XDD
   }
   else
   {
-    /* if no more data to send and client closed connection*/
+    /* if no more data to send and client closed connection*/  // to z tym closigiem to takie tez pobeltane ale db czaje
     if(es->state == ES_CLOSING)
       tcp_echoserver_connection_close(tpcb, es);
   }
@@ -370,10 +376,11 @@ static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_stru
   {
     
     /* get pointer on pbuf from es structure */
-    ptr = es->p;
+    ptr = es->p;									//zapamietaj wskaznik do bufora
+    												//mowie no tak pokombinowane
 
     /* enqueue data for transmission */
-    wr_err = tcp_write(tpcb, ptr->payload, ptr->len, 1);
+    wr_err = tcp_write(tpcb, ptr->payload, ptr->len, 1);  //wysyla caly bufor
     
     if (wr_err == ERR_OK)
     {
@@ -383,15 +390,15 @@ static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_stru
       plen = ptr->len;
      
       /* continue with next pbuf in chain (if any) */
-      es->p = ptr->next;
+      es->p = ptr->next;									//bierzemy nastepny bufor
       
-      if(es->p != NULL)
+      if(es->p != NULL)  					//jesli nie jest pusty
       {
         /* increment reference count for es->p */
         pbuf_ref(es->p);
       }
       
-     /* chop first pbuf from chain */
+     /* chop first pbuf from chain */ 				//no wywal ten wyslany bufor z pamieci...
       do
       {
         /* try hard to free pbuf */
@@ -399,7 +406,7 @@ static void tcp_echoserver_send(struct tcp_pcb *tpcb, struct tcp_echoserver_stru
       }
       while(freed == 0);
      /* we can read more data now */
-     tcp_recved(tpcb, plen);
+     tcp_recved(tpcb, plen); 				//info dla biblioteki ze jeden bufor odczytano i pamiec zostala zwolniona
    }
    else if(wr_err == ERR_MEM)
    {
