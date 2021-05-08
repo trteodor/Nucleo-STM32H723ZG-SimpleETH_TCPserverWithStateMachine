@@ -18,9 +18,9 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-
 #include "main.h"
 #include "lwip.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -99,6 +99,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_LWIP_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
   SCB_CleanInvalidateDCache();
 
@@ -118,6 +119,7 @@ int main(void)
 	  {
 		  YellowLedTime=HAL_GetTick();
 		  HAL_GPIO_TogglePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin);
+		   HAL_UART_Transmit(&huart3,(uint8_t*) "HHH\n\r", sizeof("HHH\n\r")-1, 100);
 	  }
     /* USER CODE END WHILE */
 

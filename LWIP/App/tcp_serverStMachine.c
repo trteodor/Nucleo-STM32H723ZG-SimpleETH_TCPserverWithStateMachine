@@ -14,6 +14,7 @@
 
 #include "main.h"   //for HAL functions
 #include "gpio.h"
+#include "usart.h"
 
 #define ERR_EXIT 100
 #define IAC      255    /* Interpret as command. */
@@ -188,6 +189,11 @@ err_t recv_callback(void *arg,
   if (p) {  //wskaznik jest rozny wiekszy od 0 wiec prawda.. gdy nic nie ma to jest rowny 0...
     /* Odebrano dane. */
 	        tcp_recved(pcb, p->tot_len); //informuje biblioteke o odbiorze danych
+	        		//HAL_UART_Transmit(&huart3,(uint8_t*)"ODEBRANO",sizeof("ODEBRANO"), 100);
+	        		//HAL_UART_Transmit(&huart3,(uint8_t *)p->payload, p->len, 100); //a tak se chcialem testa zrobic
+	        		//Ale dane nie sa tylko w tym p->payload bo mg se byc w nastej takiej strukturze jeszcze
+	        			//No ale wiadomix raczej nie zrobimy zeby ramka byla wieksza niz 1524oktety :D
+	         	 	 	 	 	 //czyli ponad okolo 1,5kb jesli alls understand ik ok
     err = StateAutomaton(arg, pcb, p);    //obsluga maszyny stanow!
     if (err == ERR_OK || err == ERR_EXIT)  //jak wyszstko poszlo ok to skaujesz buforki
       pbuf_free(p);   //zwolnij lanuch buforow wskazywany przez p
