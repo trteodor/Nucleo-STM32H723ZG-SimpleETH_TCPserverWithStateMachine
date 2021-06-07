@@ -119,7 +119,7 @@ int main(void)
 	  {
 		  YellowLedTime=HAL_GetTick();
 		  HAL_GPIO_TogglePin(LED_YELLOW_GPIO_Port, LED_YELLOW_Pin);
-		   HAL_UART_Transmit(&huart3,(uint8_t*) "HHH\n\r", sizeof("HHH\n\r")-1, 100);
+		  // HAL_UART_Transmit(&huart3,(uint8_t*) "HHH\n\r", sizeof("HHH\n\r")-1, 100);
 	  }
     /* USER CODE END WHILE */
 

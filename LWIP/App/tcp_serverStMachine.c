@@ -71,7 +71,7 @@ static const char timefrm[] =
 
 //Struktura!!!!!! Taka fajna :D serio!  // ale brakuje jeszcze argumentu pbuf i bylaby ideolo chyba :D
 struct state {
-  err_t (* function)(struct state *, struct tcp_pcb *, uint8_t);
+  err_t (* function)(struct state *, struct tcp_pcb *, uint8_t); //wskaznik na funkcje typu err_t z argumentami podanymi...
   int timeout;
 };
 //Funkcje w sumie do obslugi bibiloteki LwIP
@@ -189,10 +189,10 @@ err_t recv_callback(void *arg,
   if (p) {  //wskaznik jest rozny wiekszy od 0 wiec prawda.. gdy nic nie ma to jest rowny 0...
     /* Odebrano dane. */
 	        tcp_recved(pcb, p->tot_len); //informuje biblioteke o odbiorze danych
-	        		//HAL_UART_Transmit(&huart3,(uint8_t*)"ODEBRANO",sizeof("ODEBRANO"), 100);
-	        		//HAL_UART_Transmit(&huart3,(uint8_t *)p->payload, p->len, 100); //a tak se chcialem testa zrobic
-	        		//Ale dane nie sa tylko w tym p->payload bo mg se byc w nastej takiej strukturze jeszcze
-	        			//No ale wiadomix raczej nie zrobimy zeby ramka byla wieksza niz 1524oktety :D
+	        				//HAL_UART_Transmit(&huart3,(uint8_t*)"ODEBRANO",sizeof("ODEBRANO"), 100);
+	        				//HAL_UART_Transmit(&huart3,(uint8_t *)p->payload, p->len, 100); //a tak se chcialem testa zrobic
+	        				//Ale dane nie sa tylko w tym p->payload bo mg se byc w nastej takiej strukturze jeszcze
+	        			//No ale wiadomix raczej nie zrobimy zeby ramka byla wieksza niz 1524oktety :D chyba ze zrobimy...
 	         	 	 	 	 	 //czyli ponad okolo 1,5kb jesli alls understand ik ok
     err = StateAutomaton(arg, pcb, p);    //obsluga maszyny stanow!
     if (err == ERR_OK || err == ERR_EXIT)  //jak wyszstko poszlo ok to skaujesz buforki
